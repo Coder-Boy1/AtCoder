@@ -1,0 +1,121 @@
+#include <bits/stdc++.h>
+ 
+using namespace std;
+ 
+#define int long long
+ 
+#define  mod 1000000007
+#define  N   10005
+#define  inf 1e18
+ 
+int a[N];
+vector < int > primes;
+ 
+void foo()
+{
+        for(int i=2;i<N;i++)
+        {
+                if(!a[i])
+                {
+                        primes.push_back(i);
+                        for(int j=2*i; j<N; j+=i)
+                                a[j] = 1;
+                }
+        }
+}
+ 
+int32_t main()
+{
+        ios_base::sync_with_stdio(false);
+        cin.tie(NULL);
+ 
+        int n;
+        cin>>n;
+ 
+        vector < int > a(n);
+ 
+        for(int i=0; i<n; i++)
+                cin>>a[i];
+ 
+        foo();
+ 
+        map < int , int > pp;
+ 
+        for(int i=1;i<=100000;i++)
+        {
+                pp[i*i]=i;
+        }
+ 
+ 
+        map < int , int > me;
+        int flag = 0;
+        int ans = 0;
+ 
+        vector < pair < int , int > > arr;
+ 
+        for(int i=0;i<n;i++)
+        {
+                int cur = a[i];
+                int opp = 1;
+                int red = 1;
+                for(int j=0;j<primes.size();j++)
+                {
+                        int curp = primes[j];
+                        int count = 0;
+                
+                        while(cur%curp==0)
+                        {
+                                cur/=curp;
+                                count++;
+                        }
+                        count%=3;
+                        if(count==1)
+                        {
+                                opp*=curp*curp;
+                                red*=curp;
+                        }
+                        else if(count==2)
+                        {
+                                opp*=curp;
+                                red*=curp*curp;
+                        }
+                }
+                red*=cur;
+                
+                
+                if(pp.find(cur)!=pp.end())
+                {
+                        opp*= pp[cur];
+                }
+                else if(cur <= 100000)
+                {
+                        opp*= cur*cur;
+                }
+                else
+                {
+                        ans++;
+                        continue;
+                }
+                
+                me[red]++;
+                arr.push_back({red, opp});
+                
+        }
+ 
+        sort(arr.begin(), arr.end());
+        arr.erase( unique( arr.begin(), arr.end() ), arr.end() );
+ 
+ 
+        for(int i=0; i<arr.size();i++)
+        {
+                if(arr[i].first==1)
+                        ans++;
+                else
+                        ans+= max(me[arr[i].first], me[arr[i].second]);
+                me[arr[i].first] =0;
+                me[arr[i].second] =0;
+        }       
+        cout<<ans<<endl;
+ 
+        return 0;
+}
